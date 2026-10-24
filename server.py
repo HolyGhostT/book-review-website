@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, send_from_directory
 import sqlite3
+import os
 from pathlib import Path
 from datetime import datetime, timezone
 
@@ -33,6 +34,8 @@ def init_db():
                 created_at TEXT NOT NULL
             )
         """)
+
+init_db()
 
 @app.get("/")
 def home():
@@ -94,4 +97,4 @@ def add_review():
 if __name__ == "__main__":
     init_db()
     print("BookReview is running at http://127.0.0.1:5000")
-    app.run(host="127.0.0.1", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", "10000")), debug=False)
