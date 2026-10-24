@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A community for discovering books and sharing honest reading experiences.">
+  <title>BookReview | Book Reviews & Reading Experiences</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="BookReview home"><span class="brand-mark">r</span><span>read<span class="brand-accent">circle</span></span></a>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a class="active" href="#home">Home</a>
+      <a href="#discover">Discover books</a>
+      <a href="#community">Community reviews</a>
+    </nav>
+    <button class="button button-dark header-cta" id="writeReviewTop">Write a review <span aria-hidden="true">↗</span></button>
+    <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="eyebrow-dot"></span> A COMMUNITY FOR READERS</p>
+        <h1>Every book leaves<br> a <em>different story.</em></h1>
+        <p class="hero-description">Find your next great read through honest reviews and real experiences from people who love books as much as you do.</p>
+        <div class="hero-actions">
+          <a class="button button-dark" href="#discover">Explore books <span aria-hidden="true">→</span></a>
+          <a class="text-link" href="#community">Read community reviews <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="reader-proof">
+          <div class="avatar-stack" aria-hidden="true"><span>AO</span><span>MK</span><span>TS</span><span>+</span></div>
+          <p><strong>Good books. Honest opinions.</strong><br><span>A space for every kind of reader.</span></p>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Featured books illustration">
+        <div class="sun-shape"></div>
+        <div class="plant plant-one"></div><div class="plant plant-two"></div>
+        <div class="book-display">
+          <div class="book book-back"><span>THE<br>CREATIVE<br>ACT</span><small>RICK RUBIN</small></div>
+          <div class="book book-middle"><span>HOME<br>GOING</span><small>YAA GYASI</small></div>
+          <div class="book book-front"><span>THE<br>ALCHEMIST</span><small>PAULO COELHO</small><i>✳</i></div>
+        </div>
+        <div class="art-note"><span>✦</span> Your next favourite<br>book might be here.</div>
+      </div>
+    </section>
+
+    <section class="stats-strip" aria-label="Website highlights">
+      <div><strong id="bookCount">06</strong><span>Books to explore</span></div>
+      <div><strong>01</strong><span>Shared reading space</span></div>
+      <div><strong>∞</strong><span>Stories to discover</span></div>
+      <p>READ A LITTLE. SHARE A LOT.</p>
+    </section>
+
+    <section class="section discover-section" id="discover">
+      <div class="section-heading">
+        <div><p class="eyebrow">YOUR NEXT READ</p><h2>Find a book worth<br class="mobile-break"> talking about.</h2></div>
+        <p class="section-intro">Browse the collection, explore a new genre, or search for a title you've been meaning to read.</p>
+      </div>
+      <div class="catalogue-tools">
+        <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Search by title or author..." aria-label="Search by title or author"></label>
+        <div class="filter-pills" id="genreFilters" aria-label="Filter by genre">
+          <button class="filter-pill selected" data-genre="All">All books</button>
+          <button class="filter-pill" data-genre="Fiction">Fiction</button>
+          <button class="filter-pill" data-genre="Personal Growth">Personal growth</button>
+          <button class="filter-pill" data-genre="Classic">Classics</button>
+        </div>
+      </div>
+      <div class="book-grid" id="bookGrid"></div>
+      <p class="empty-state hidden" id="emptyState">No books match your search. Try another title or author.</p>
+    </section>
+
+    <section class="quote-band">
+      <span class="quote-mark">“</span>
+      <blockquote>A reader lives a thousand lives before he dies. The man who never reads lives only one.</blockquote>
+      <p>— George R. R. Martin</p>
+    </section>
+
+    <section class="section community-section" id="community">
+      <div class="section-heading">
+        <div><p class="eyebrow">FROM THE COMMUNITY</p><h2>What readers are saying.</h2></div>
+        <button class="button button-outline" id="writeReviewCommunity">Share your thoughts <span aria-hidden="true">↗</span></button>
+      </div>
+      <div class="review-grid" id="reviewGrid"></div>
+      <div class="community-bottom"><span class="community-icon">✳</span><p>Your perspective matters. <strong>Read it, feel it, share it.</strong></p><button class="text-link" id="writeReviewBottom">Add your review →</button></div>
+    </section>
+
+    <section class="newsletter">
+      <div><p class="eyebrow">STAY IN THE LOOP</p><h2>Good reads, shared often.</h2><p>Join the conversation and keep discovering books worth your time.</p></div>
+      <form id="newsletterForm" class="newsletter-form"><label class="sr-only" for="newsletterEmail">Your email address</label><input id="newsletterEmail" type="email" placeholder="Your email address" required><button class="button button-dark" type="submit">Join the circle <span>→</span></button></form>
+      <p class="newsletter-message" id="newsletterMessage" role="status"></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="#home"><span class="brand-mark">r</span><span>read<span class="brand-accent">circle</span></span></a>
+    <p>A little more connection, one book at a time.</p>
+    <div><a href="#discover">Discover</a><a href="#community">Reviews</a><a href="#home">Back to top ↑</a></div>
+    <small>© 2026 BookReview. A book review website concept.</small>
+  </footer>
+
+  <dialog id="reviewDialog" class="review-dialog">
+    <form id="reviewForm" method="dialog">
+      <div class="dialog-heading"><div><p class="eyebrow">YOUR READING EXPERIENCE</p><h2>Write a review</h2></div><button class="close-dialog" type="button" id="closeDialog" aria-label="Close">×</button></div>
+      <label for="reviewerName">Your name</label><input id="reviewerName" name="reviewerName" type="text" placeholder="e.g. Tella" required maxlength="40">
+      <label for="reviewBook">Book</label><select id="reviewBook" name="reviewBook" required></select>
+      <label>Rating</label><div class="rating-picker" id="ratingPicker" role="radiogroup" aria-label="Choose a rating">
+        <button type="button" data-rating="1" aria-label="1 star">★</button><button type="button" data-rating="2" aria-label="2 stars">★</button><button type="button" data-rating="3" aria-label="3 stars">★</button><button type="button" data-rating="4" aria-label="4 stars">★</button><button type="button" data-rating="5" aria-label="5 stars">★</button>
+      </div>
+      <input type="hidden" id="reviewRating" value="5">
+      <label for="reviewText">Your review</label><textarea id="reviewText" name="reviewText" rows="4" placeholder="What stood out to you? Would you recommend this book?" required minlength="12" maxlength="600"></textarea>
+      <p class="form-note">Your review will appear on this browser for this demonstration.</p>
+      <button class="button button-dark submit-review" type="submit">Publish review <span>↗</span></button>
+      <p id="reviewFormMessage" class="form-message" role="status"></p>
+    </form>
+  </dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
