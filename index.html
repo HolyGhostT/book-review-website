@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,16 +10,89 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
+  <style>
+    .contact-section {
+      background: #f7f8f4;
+      padding: 70px 24px;
+    }
+    .contact-container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .contact-heading {
+      text-align: center;
+      max-width: 650px;
+      margin: 0 auto 35px;
+    }
+    .contact-heading h2 {
+      font-family: "Playfair Display", serif;
+      font-size: clamp(30px, 4vw, 44px);
+      margin: 12px 0;
+    }
+    .contact-heading p {
+      line-height: 1.7;
+    }
+    .contact-form {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 30px;
+      background: #fff;
+      border: 1px solid #e1e5dc;
+      border-radius: 16px;
+    }
+    .contact-form label {
+      display: block;
+      margin: 15px 0 7px;
+      font-weight: 600;
+    }
+    .contact-form input,
+    .contact-form textarea {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccd5ce;
+      border-radius: 8px;
+      font: inherit;
+      background: #fff;
+      box-sizing: border-box;
+    }
+    .contact-form textarea {
+      resize: vertical;
+    }
+    .contact-form button {
+      margin-top: 20px;
+    }
+    #contactFormStatus {
+      margin-top: 15px;
+      line-height: 1.6;
+    }
+    @media (max-width: 600px) {
+      .contact-section {
+        padding: 45px 18px;
+      }
+      .contact-form {
+        padding: 22px 18px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="#" aria-label="BookReview home"><span class="brand-mark">r</span><span>read<span class="brand-accent">circle</span></span></a>
+    <a class="brand" href="#home" aria-label="BookReview home">
+      <span class="brand-mark">r</span>
+      <span>read<span class="brand-accent">circle</span></span>
+    </a>
+
     <nav class="main-nav" aria-label="Main navigation">
       <a class="active" href="#home">Home</a>
       <a href="#discover">Discover books</a>
       <a href="#community">Community reviews</a>
+      <a href="#contact">Contact</a>
     </nav>
-    <button class="button button-dark header-cta" id="writeReviewTop">Write a review <span aria-hidden="true">↗</span></button>
+
+    <button class="button button-dark header-cta" id="writeReviewTop">
+      Write a review <span aria-hidden="true">↗</span>
+    </button>
     <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation">☰</button>
   </header>
 
@@ -90,34 +164,87 @@
     </section>
 
     <section class="newsletter">
-      <div><p class="eyebrow">STAY IN THE LOOP</p><h2>Good reads, shared often.</h2><p>Join the conversation and keep discovering books worth your time.</p></div>
-      <form id="newsletterForm" class="newsletter-form"><label class="sr-only" for="newsletterEmail">Your email address</label><input id="newsletterEmail" type="email" placeholder="Your email address" required><button class="button button-dark" type="submit">Join the circle <span>→</span></button></form>
+      <div>
+        <p class="eyebrow">STAY IN THE LOOP</p>
+        <h2>Good reads, shared often.</h2>
+        <p>Join the conversation and keep discovering books worth your time.</p>
+      </div>
+      <form id="newsletterForm" class="newsletter-form">
+        <label class="sr-only" for="newsletterEmail">Your email address</label>
+        <input id="newsletterEmail" type="email" placeholder="Your email address" required>
+        <button class="button button-dark" type="submit">Join the circle <span>→</span></button>
+      </form>
       <p class="newsletter-message" id="newsletterMessage" role="status"></p>
+    </section>
+
+    <!-- Contact section added to the main homepage -->
+    <section class="contact-section" id="contact">
+      <div class="contact-container">
+        <div class="contact-heading">
+          <p class="eyebrow">GET IN TOUCH</p>
+          <h2>We'd love to hear from you.</h2>
+          <p>Have a question, suggestion, or feedback about BookReview? Send us a message. We'd be happy to hear from you.</p>
+        </div>
+
+        <form id="contactForm" class="contact-form">
+          <label for="contactName">Your name</label>
+          <input id="contactName" name="name" type="text" maxlength="80" autocomplete="name" required>
+
+          <label for="contactEmail">Email address</label>
+          <input id="contactEmail" name="email" type="email" maxlength="160" autocomplete="email" required>
+
+          <label for="contactSubject">Subject</label>
+          <input id="contactSubject" name="subject" type="text" maxlength="160" required>
+
+          <label for="contactMessage">Your message</label>
+          <textarea id="contactMessage" name="message" rows="5" minlength="5" maxlength="3000" required></textarea>
+
+          <button class="button button-dark" type="submit">Send message <span aria-hidden="true">→</span></button>
+          <p id="contactFormStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
     </section>
   </main>
 
   <footer class="site-footer">
     <a class="brand footer-brand" href="#home"><span class="brand-mark">r</span><span>read<span class="brand-accent">circle</span></span></a>
     <p>A little more connection, one book at a time.</p>
-    <div><a href="#discover">Discover</a><a href="#community">Reviews</a><a href="#home">Back to top ↑</a></div>
+    <div>
+      <a href="#discover">Discover</a>
+      <a href="#community">Reviews</a>
+      <a href="#contact">Contact</a>
+      <a href="#home">Back to top ↑</a>
+    </div>
     <small>© 2026 BookReview. A book review website concept.</small>
   </footer>
 
   <dialog id="reviewDialog" class="review-dialog">
     <form id="reviewForm" method="dialog">
-      <div class="dialog-heading"><div><p class="eyebrow">YOUR READING EXPERIENCE</p><h2>Write a review</h2></div><button class="close-dialog" type="button" id="closeDialog" aria-label="Close">×</button></div>
-      <label for="reviewerName">Your name</label><input id="reviewerName" name="reviewerName" type="text" placeholder="e.g. Tella" required maxlength="40">
-      <label for="reviewBook">Book</label><select id="reviewBook" name="reviewBook" required></select>
-      <label>Rating</label><div class="rating-picker" id="ratingPicker" role="radiogroup" aria-label="Choose a rating">
-        <button type="button" data-rating="1" aria-label="1 star">★</button><button type="button" data-rating="2" aria-label="2 stars">★</button><button type="button" data-rating="3" aria-label="3 stars">★</button><button type="button" data-rating="4" aria-label="4 stars">★</button><button type="button" data-rating="5" aria-label="5 stars">★</button>
+      <div class="dialog-heading">
+        <div><p class="eyebrow">YOUR READING EXPERIENCE</p><h2>Write a review</h2></div>
+        <button class="close-dialog" type="button" id="closeDialog" aria-label="Close">×</button>
+      </div>
+      <label for="reviewerName">Your name</label>
+      <input id="reviewerName" name="reviewerName" type="text" placeholder="e.g. Tella" required maxlength="40">
+      <label for="reviewBook">Book</label>
+      <select id="reviewBook" name="reviewBook" required></select>
+      <label>Rating</label>
+      <div class="rating-picker" id="ratingPicker" role="radiogroup" aria-label="Choose a rating">
+        <button type="button" data-rating="1" aria-label="1 star">★</button>
+        <button type="button" data-rating="2" aria-label="2 stars">★</button>
+        <button type="button" data-rating="3" aria-label="3 stars">★</button>
+        <button type="button" data-rating="4" aria-label="4 stars">★</button>
+        <button type="button" data-rating="5" aria-label="5 stars">★</button>
       </div>
       <input type="hidden" id="reviewRating" value="5">
-      <label for="reviewText">Your review</label><textarea id="reviewText" name="reviewText" rows="4" placeholder="What stood out to you? Would you recommend this book?" required minlength="12" maxlength="600"></textarea>
+      <label for="reviewText">Your review</label>
+      <textarea id="reviewText" name="reviewText" rows="4" placeholder="What stood out to you? Would you recommend this book?" required minlength="12" maxlength="600"></textarea>
       <p class="form-note">Your review will appear on this browser for this demonstration.</p>
       <button class="button button-dark submit-review" type="submit">Publish review <span>↗</span></button>
       <p id="reviewFormMessage" class="form-message" role="status"></p>
     </form>
   </dialog>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <script src="app.js"></script>
 </body>
