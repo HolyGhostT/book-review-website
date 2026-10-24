@@ -1,4 +1,4 @@
-const books = [
+let books = [
   {id:1,title:"The Alchemist",author:"Paulo Coelho",genre:"Fiction",rating:4.8,color:"#d7c39d",ink:"#314331",symbol:"✳",desc:"A young shepherd follows a dream and discovers what it means to listen to his heart.",year:1988},
   {id:2,title:"Homegoing",author:"Yaa Gyasi",genre:"Fiction",rating:4.7,color:"#31513e",ink:"#f6e8c8",symbol:"✦",desc:"Two half-sisters and the generations that follow them across continents and time.",year:2016},
   {id:3,title:"The Creative Act",author:"Rick Rubin",genre:"Personal Growth",rating:4.6,color:"#c77751",ink:"#fff0d6",symbol:"☼",desc:"A thoughtful look at creativity, attention and making space for meaningful work.",year:2023},
@@ -137,8 +137,17 @@ $("#newsletterForm").addEventListener("submit",e=>{
 $("#menuToggle").addEventListener("click",()=>$("#main-nav")?.classList.toggle("open") || $(".main-nav").classList.toggle("open"));
 $$(".main-nav a").forEach(a=>a.addEventListener("click",()=>$(".main-nav").classList.remove("open")));
 
-fetch("/api/reviews")
-  .then(response=>response.ok ? response.json() : [])
-  .then(data=>{ databaseReviews=Array.isArray(data.reviews) ? data.reviews : []; renderBooks(); renderReviews(); })
-  .catch(()=>{ databaseReviews=[]; renderBooks(); renderReviews(); showToast("Backend not connected. Run the website using the setup instructions."); });
+Promise.all([
+  fetch("/api/books").then(r=>{if(!r.ok) throw new Error("Books could not be loaded"); return r.json();}),
+  fetch("/api/reviews").then(r=>{if(!r.ok) throw new Error("Reviews could not be loaded"); return r.json();})
+]).then(([bookData, reviewData])=>{
+  if(Array.isArray(bookData.books) && bookData.books.length) {
+    books=bookData.books.map(b=>({...b, desc:b.desc || b.description || "", coverUrl:b.coverUrl || b.cover_url || ""}));
+  }
+  databaseReviews=Array.isArray(reviewData.reviews) ? reviewData.reviews : [];
+  renderBooks(); renderReviews();
+}).catch(()=>{
+  renderBooks(); renderReviews();
+  showToast("Some live data could not be loaded. Please refresh the page.");
+});
 updateRatingPicker();
