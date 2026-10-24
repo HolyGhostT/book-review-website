@@ -399,3 +399,46 @@ Promise.all([
 });
 
 updateRatingPicker();
+
+
+const contactForm = document.getElementById("contactForm");
+
+if (contactForm) {
+  contactForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    const status = document.getElementById("contactFormStatus");
+    const button = contactForm.querySelector('button[type="submit"]');
+    const payload = Object.fromEntries(
+      new FormData(contactForm).entries()
+    );
+
+    status.textContent = "Sending your message...";
+    button.disabled = true;
+
+    try {
+      const response = await fetch("/api/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Could not send your message.");
+      }
+
+      status.textContent = "Message sent successfully. Thank you!";
+      contactForm.reset();
+    } catch (error) {
+      status.textContent =
+        error.message || "Something went wrong. Please try again.";
+    } finally {
+      button.disabled = false;
+    }
+  });
+}
+
