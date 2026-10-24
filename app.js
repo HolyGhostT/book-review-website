@@ -128,11 +128,24 @@ $("#reviewForm").addEventListener("submit",e=>{
     $("#reviewFormMessage").textContent=`${error.message} Make sure you opened the website through the local server.`;
   });
 });
-$("#newsletterForm").addEventListener("submit",e=>{
+$("#newsletterForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const email=$("#newsletterEmail").value.trim();
-  $("#newsletterMessage").textContent=`Thanks! ${email} has been added for this demo.`;
-  e.target.reset();
+  const message=$("#newsletterMessage");
+  const button=e.target.querySelector('button[type="submit"]');
+  button.disabled=true;
+  message.textContent="Adding your email...";
+  try {
+    const response=await fetch("/api/newsletter",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok) throw new Error(data.error||"We couldn't add your email. Please try again.");
+    message.textContent=data.message||"Thank you for subscribing.";
+    e.target.reset();
+  } catch(error) {
+    message.textContent=error.message||"Something went wrong. Please try again.";
+  } finally {
+    button.disabled=false;
+  }
 });
 $("#menuToggle").addEventListener("click",()=>$("#main-nav")?.classList.toggle("open") || $(".main-nav").classList.toggle("open"));
 $$(".main-nav a").forEach(a=>a.addEventListener("click",()=>$(".main-nav").classList.remove("open")));

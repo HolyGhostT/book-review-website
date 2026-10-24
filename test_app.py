@@ -37,6 +37,18 @@ class BookReviewTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         response = self.client.get("/api/admin/summary")
         self.assertEqual(response.status_code, 200)
+        self.assertIn("subscribers", response.get_json())
+
+    def test_newsletter_subscription_and_duplicate(self):
+        response = self.client.post("/api/newsletter", json={"email":"Reader@example.com"})
+        self.assertEqual(response.status_code, 201)
+        response = self.client.post("/api/newsletter", json={"email":"reader@example.com"})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("already subscribed", response.get_json()["message"])
+
+    def test_newsletter_validation(self):
+        response = self.client.post("/api/newsletter", json={"email":"not-an-email"})
+        self.assertEqual(response.status_code, 400)
 
 if __name__ == "__main__":
     unittest.main()

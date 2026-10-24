@@ -46,6 +46,11 @@ def init_db():
             id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, email TEXT NOT NULL,
             subject TEXT NOT NULL, message TEXT NOT NULL, created_at TEXT NOT NULL
         )""")
+        conn.execute("""CREATE TABLE IF NOT EXISTS subscribers (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT NOT NULL UNIQUE COLLATE NOCASE,
+            created_at TEXT NOT NULL
+        )""")
         count = conn.execute("SELECT COUNT(*) FROM books").fetchone()[0]
         if count == 0:
             now = datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -117,6 +122,20 @@ def add_review():
         review_id=cur.lastrowid
     return jsonify({"review":{"id":review_id,"bookId":book_id,"name":name,"rating":rating,"text":text,"date":"Just added"}}),201
 
+@app.post("/api/newsletter")
+def add_subscriber():
+    data = request.get_json(silent=True) or {}
+    email = str(data.get("email", "")).strip().lower()
+    if len(email) > 254 or "@" not in email or email.startswith("@") or email.endswith("@"):
+        return jsonify({"error": "Please enter a valid email address."}), 400
+    now = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    try:
+        with connect_db() as conn:
+            conn.execute("INSERT INTO subscribers(email, created_at) VALUES(?, ?)", (email, now))
+    except sqlite3.IntegrityError:
+        return jsonify({"message": "This email is already subscribed."}), 200
+    return jsonify({"message": "You're in! Your email has been added to the BookReview newsletter."}), 201
+
 @app.post("/api/messages")
 def add_message():
     d=request.get_json(silent=True) or {}
@@ -156,11 +175,13 @@ def admin_summary():
         books=conn.execute("SELECT * FROM books ORDER BY id DESC").fetchall()
         reviews=conn.execute("""SELECT r.*,b.title AS book_title FROM reviews r LEFT JOIN books b ON b.id=r.book_id ORDER BY r.id DESC""").fetchall()
         messages=conn.execute("SELECT * FROM messages ORDER BY id DESC").fetchall()
+        subscribers=conn.execute("SELECT * FROM subscribers ORDER BY id DESC").fetchall()
     return jsonify({
         "books":[{k:b[k] for k in ["id","title","author","genre","description","year","color","ink","symbol","cover_url"]} for b in books],
         "reviews":[{"id":r["id"],"bookId":r["book_id"],"bookTitle":r["book_title"] or "Removed book","name":r["name"],"rating":r["rating"],"text":r["review_text"],"date":r["created_at"]} for r in reviews],
         "messages":[{"id":m["id"],"name":m["name"],"email":m["email"],"subject":m["subject"],"message":m["message"],"date":m["created_at"]} for m in messages],
-        "reviewCount":len(reviews),"messageCount":len(messages),"bookCount":len(books)
+        "subscribers":[{"id":s["id"],"email":s["email"],"date":s["created_at"]} for s in subscribers],
+        "reviewCount":len(reviews),"messageCount":len(messages),"bookCount":len(books),"subscriberCount":len(subscribers)
     })
 
 @app.post("/api/admin/books")
@@ -217,6 +238,15 @@ def delete_message(item_id):
     if not is_admin(): return jsonify({"error":"Please sign in."}),401
     with connect_db() as conn: conn.execute("DELETE FROM messages WHERE id=?",(item_id,))
     return jsonify({"message":"Message deleted"})
+
+@app.delete("/api/admin/subscribers/<int:item_id>")
+def delete_subscriber(item_id):
+    if not is_admin(): return jsonify({"error":"Please sign in."}),401
+    with connect_db() as conn:
+        cur = conn.execute("DELETE FROM subscribers WHERE id=?", (item_id,))
+        if cur.rowcount == 0:
+            return jsonify({"error":"Subscriber not found."}),404
+    return jsonify({"message":"Subscriber removed"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT","10000")), debug=False)

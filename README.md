@@ -13,6 +13,7 @@ BookReview is a student group-project prototype for exploring a small book catal
 - Add, edit and remove books
 - View and remove submitted reviews
 - View contact messages and open an email reply
+- Collect newsletter signups from the homepage and manage subscribers in the admin dashboard
 
 ## Run locally
 Requires Python 3.10 or later.
@@ -48,4 +49,5 @@ Record each result only after actually performing the test:
 5. Add a book, edit it, and check it appears on the public catalogue.
 6. Delete a test review and verify it is removed.
 7. Submit a contact message and confirm it appears in the dashboard.
+8. Subscribe with an email through “Join the circle” and confirm it appears under “Newsletter subscribers” in the admin dashboard. Try the same email again to confirm duplicates are handled.
 8. Sign out and verify the admin data endpoints require login.
