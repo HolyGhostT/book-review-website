@@ -92,18 +92,22 @@ def init_db():
         if count == 0:
             now = datetime.now(timezone.utc).isoformat(timespec="seconds")
 
-            conn.executemany("""
-                INSERT INTO books (
-                    id, title, author, genre, description, year,
-                    color, ink, symbol, cover_url, created_at
-                )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, [
-                (i, title, author, genre, description, year,
-                 color, ink, symbol, "", now)
-                for i, title, author, genre, description, year,
-                    color, ink, symbol in SEED_BOOKS
-            ])
+            # FIXED: executemany belongs to the cursor, not the connection.
+            with conn.cursor() as cur:
+                cur.executemany("""
+                    INSERT INTO books (
+                        id, title, author, genre, description, year,
+                        color, ink, symbol, cover_url, created_at
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, [
+                    (
+                        i, title, author, genre, description, year,
+                        color, ink, symbol, "", now
+                    )
+                    for i, title, author, genre, description, year,
+                        color, ink, symbol in SEED_BOOKS
+                ])
 
             conn.execute("""
                 SELECT setval(
@@ -155,11 +159,11 @@ def get_books():
         """).fetchall()
 
     rating_map = {
-        review["book_id"]: {
-            "rating": round(float(review["avg_rating"]), 1),
-            "reviewCount": review["total"]
+        r["book_id"]: {
+            "rating": round(float(r["avg_rating"]), 1),
+            "reviewCount": r["total"]
         }
-        for review in reviews
+        for r in reviews
     }
 
     result = []
@@ -197,16 +201,16 @@ def get_reviews():
     return jsonify({
         "reviews": [
             {
-                "id": row["id"],
-                "bookId": row["book_id"],
-                "name": row["name"],
-                "rating": row["rating"],
-                "text": row["review_text"],
+                "id": r["id"],
+                "bookId": r["book_id"],
+                "name": r["name"],
+                "rating": r["rating"],
+                "text": r["review_text"],
                 "date": datetime.fromisoformat(
-                    row["created_at"]
+                    r["created_at"]
                 ).strftime("%d %b %Y")
             }
-            for row in rows
+            for r in rows
         ]
     })
 
@@ -260,11 +264,9 @@ def add_review():
             datetime.now(timezone.utc).isoformat(timespec="seconds")
         )).fetchone()
 
-        review_id = row["id"]
-
     return jsonify({
         "review": {
-            "id": review_id,
+            "id": row["id"],
             "bookId": book_id,
             "name": name,
             "rating": rating,
@@ -293,10 +295,10 @@ def add_subscriber():
 
     try:
         with connect_db() as conn:
-            conn.execute(
-                "INSERT INTO subscribers (email, created_at) VALUES (%s, %s)",
-                (email, now)
-            )
+            conn.execute("""
+                INSERT INTO subscribers (email, created_at)
+                VALUES (%s, %s)
+            """, (email, now))
     except psycopg.errors.UniqueViolation:
         return jsonify({
             "message": "This email is already subscribed."
@@ -347,10 +349,7 @@ def add_message():
             datetime.now(timezone.utc).isoformat(timespec="seconds")
         )).fetchone()
 
-    return jsonify({
-        "message": "Message received",
-        "id": row["id"]
-    }), 201
+    return jsonify({"message": "Message received", "id": row["id"]}), 201
 
 
 def is_admin():
@@ -373,7 +372,6 @@ def admin_login():
         return jsonify({"error": "Incorrect password."}), 401
 
     session["bookreview_admin"] = True
-
     return jsonify({"message": "Signed in"})
 
 
@@ -421,34 +419,34 @@ def admin_summary():
         ],
         "reviews": [
             {
-                "id": review["id"],
-                "bookId": review["book_id"],
-                "bookTitle": review["book_title"] or "Removed book",
-                "name": review["name"],
-                "rating": review["rating"],
-                "text": review["review_text"],
-                "date": review["created_at"]
+                "id": r["id"],
+                "bookId": r["book_id"],
+                "bookTitle": r["book_title"] or "Removed book",
+                "name": r["name"],
+                "rating": r["rating"],
+                "text": r["review_text"],
+                "date": r["created_at"]
             }
-            for review in reviews
+            for r in reviews
         ],
         "messages": [
             {
-                "id": message["id"],
-                "name": message["name"],
-                "email": message["email"],
-                "subject": message["subject"],
-                "message": message["message"],
-                "date": message["created_at"]
+                "id": m["id"],
+                "name": m["name"],
+                "email": m["email"],
+                "subject": m["subject"],
+                "message": m["message"],
+                "date": m["created_at"]
             }
-            for message in messages
+            for m in messages
         ],
         "subscribers": [
             {
-                "id": subscriber["id"],
-                "email": subscriber["email"],
-                "date": subscriber["created_at"]
+                "id": s["id"],
+                "email": s["email"],
+                "date": s["created_at"]
             }
-            for subscriber in subscribers
+            for s in subscribers
         ],
         "reviewCount": len(reviews),
         "messageCount": len(messages),
@@ -511,9 +509,7 @@ def create_book():
             now
         )).fetchone()
 
-        book_id = row["id"]
-
-    return jsonify({"message": "Book added", "id": book_id}), 201
+    return jsonify({"message": "Book added", "id": row["id"]}), 201
 
 
 @app.put("/api/admin/books/<int:book_id>")
