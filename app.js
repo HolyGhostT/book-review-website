@@ -442,3 +442,60 @@ if (contactForm) {
   });
 }
 
+
+/* ReadCircle: mobile navigation and scroll animations */
+
+(function () {
+  const menuToggle = document.getElementById("menuToggle");
+  const mainNav = document.querySelector(".main-nav");
+
+  if (menuToggle && mainNav) {
+    menuToggle.setAttribute("aria-expanded", "false");
+
+    menuToggle.addEventListener("click", function () {
+      const isOpen = mainNav.classList.toggle("nav-open");
+      menuToggle.setAttribute("aria-expanded", String(isOpen));
+      menuToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
+      menuToggle.textContent = isOpen ? "×" : "☰";
+    });
+
+    mainNav.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        mainNav.classList.remove("nav-open");
+        menuToggle.setAttribute("aria-expanded", "false");
+        menuToggle.setAttribute("aria-label", "Open navigation");
+        menuToggle.textContent = "☰";
+      });
+    });
+  }
+
+  const revealTargets = document.querySelectorAll(
+    ".section-heading, .book-card, .review-card, .quote-band, .stats-strip, .newsletter, .contact-heading, .contact-form"
+  );
+
+  revealTargets.forEach(function (element) {
+    element.classList.add("rc-reveal");
+  });
+
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("rc-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.12,
+      rootMargin: "0px 0px -35px 0px"
+    });
+
+    revealTargets.forEach(function (element) {
+      observer.observe(element);
+    });
+  } else {
+    revealTargets.forEach(function (element) {
+      element.classList.add("rc-visible");
+    });
+  }
+})();
