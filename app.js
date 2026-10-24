@@ -29,6 +29,7 @@ const $$ = (selector, root=document) => [...root.querySelectorAll(selector)];
 let activeGenre = "All";
 let activeRating = 5;
 let toastTimer;
+let newsletterPopupTimer;
 
 let databaseReviews = [];
 
@@ -66,7 +67,7 @@ function bookCover(book, index) {
   return `<div class="book-cover" style="background:${palette.bg}">
     <div class="cover-design" style="background:${palette.bg};color:${palette.ink}">
       <span class="cover-title">${display}</span>
-      <span class="cover-author">${book.author}</span>
+      <span class="cover-author">${escapeHTML(book.author)}</span>
       <span class="cover-symbol">${book.symbol || "✳"}</span>
     </div>
   </div>`;
@@ -88,7 +89,7 @@ function renderBooks() {
     return `<article class="book-card">
       ${bookCover(book, index)}
       <div class="book-card-meta">
-        <span class="genre-tag">${book.genre}</span>
+        <span class="genre-tag">${escapeHTML(book.genre)}</span>
         <span class="book-rating"><span class="star">★</span>${averageRating(book.id).toFixed(1)}</span>
       </div>
       <h3>${escapeHTML(book.title)}</h3>
@@ -155,7 +156,7 @@ function showBookReviews(bookId) {
   const count = allReviews().filter(r => Number(r.bookId) === bookId).length;
 
   showToast(`${book.title}: ${count} community review${count === 1 ? "" : "s"} so far.`);
-  $("#community").scrollIntoView({behavior: "smooth"});
+  $("#community").scrollIntoView({behavior:"smooth"});
 }
 
 function openReviewDialog(bookId) {
@@ -280,7 +281,7 @@ $("#reviewForm").addEventListener("submit", e => {
   });
 });
 
-/* Newsletter subscription */
+/* Newsletter subscription and popup */
 $("#newsletterForm").addEventListener("submit", async e => {
   e.preventDefault();
 
@@ -288,10 +289,14 @@ $("#newsletterForm").addEventListener("submit", async e => {
   const message = $("#newsletterMessage");
   const button = e.target.querySelector('button[type="submit"]');
 
-  // Make the message visible before displaying the result.
+  // Cancel any previous popup timer.
+  clearTimeout(newsletterPopupTimer);
+
+  // Make the popup visible.
   message.classList.remove("hidden");
   message.setAttribute("role", "status");
   message.setAttribute("aria-live", "polite");
+  message.style.display = "block";
 
   const originalButtonText = button.textContent;
 
@@ -313,17 +318,37 @@ $("#newsletterForm").addEventListener("submit", async e => {
       throw new Error(data.error || "We couldn't add your email. Please try again.");
     }
 
+    // Show the successful subscription message.
     message.textContent =
-      data.message || "You're on the list! Thanks for joining the BookReview circle.";
+      data.message || "You're in! Your email has been added to the BookReview newsletter.";
 
     message.dataset.status = "success";
+
+    // Clear the email field after successful submission.
     e.target.reset();
 
+    // Automatically hide the popup after five seconds.
+    newsletterPopupTimer = setTimeout(() => {
+      message.textContent = "";
+      message.classList.add("hidden");
+      message.style.display = "";
+      delete message.dataset.status;
+    }, 5000);
+
   } catch (error) {
+    // Show an error popup if the subscription fails.
     message.textContent =
       error.message || "We couldn't complete your subscription. Please try again.";
 
     message.dataset.status = "error";
+
+    // Automatically hide the error message after five seconds.
+    newsletterPopupTimer = setTimeout(() => {
+      message.textContent = "";
+      message.classList.add("hidden");
+      message.style.display = "";
+      delete message.dataset.status;
+    }, 5000);
 
   } finally {
     button.disabled = false;
